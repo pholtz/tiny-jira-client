@@ -46,6 +46,7 @@ def comments(args):
 	for comment in sorted_comments:
 		updated = datetime.strptime(comment["updated"], "%Y-%m-%dT%H:%M:%S.%f%z")
 		comment["updated"] = updated.strftime("%b %d")
+		comment["comment"] = comment["comment"].replace("\r\n", "")
 
 	grouped_comments = {}
 	for comment in sorted_comments:

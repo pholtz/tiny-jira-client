@@ -11,6 +11,7 @@
 import argparse
 from comments import comments
 from issues import issues
+from worklogs import worklogs
 
 
 def main():
@@ -24,6 +25,10 @@ def main():
 	
 	issues_parser = subparsers.add_parser("issues", help="Retrieve the currently assigned issues for the given user")
 	issues_parser.set_defaults(func=issues)
+
+	worklogs_parser = subparsers.add_parser("worklogs", help="Retrieve the most recent worklogs for the given user")
+	worklogs_parser.add_argument("--limit", type=int, help="Limit the number of returned worklogs")
+	worklogs_parser.set_defaults(func=worklogs)
 	
 	args = parser.parse_args()
 	if hasattr(args, "func"):

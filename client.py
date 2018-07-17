@@ -36,5 +36,15 @@ def get_issue_comments(authorization, issue_key):
 	return comment_results
 
 
+def get_issue_worklogs(authorization, issue_key):
+	headers = {"Content-Type": "application/json", "Authorization": "Basic {}".format(authorization)}
+	worklog_response = requests.get("https://{}/rest/api/latest/issue/{}/worklog".format(hostname, issue_key), headers=headers, verify=False)
+	if worklog_response.status_code != 200:
+		print("Error while retrieving worklogs for issue {}".format(issue_key))
+		return
+	worklog_results = json.loads(worklog_response.text)
+	return worklog_results
+
+
 def disable_https_warnings():
 	requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
