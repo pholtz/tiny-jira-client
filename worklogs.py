@@ -15,6 +15,7 @@ import base64
 from datetime import datetime
 from tqdm import tqdm
 from color import Color
+from environment import Environment
 import client
 
 
@@ -24,7 +25,7 @@ def worklogs(args):
 	password = getpass.getpass(prompt="Password: ")
 	authorization = base64.b64encode("{}:{}".format(username, password).encode()).decode("utf-8")
 
-	search_results = client.get_my_open_issues(authorization)
+	search_results = client.get_custom_issues(authorization, "worklogAuthor=currentUser() and project=ITCM and updated > -30d".format(Environment.project))
 
 	worklogs = []
 	for issue in tqdm(search_results["issues"]):
@@ -44,11 +45,13 @@ def worklogs(args):
 	# Sort worklogs from the earliest to the latest
 	sorted_worklogs = sorted(worklogs, key=lambda worklog: datetime.strptime(worklog["started"], "%Y-%m-%dT%H:%M:%S.%f%z"))
 
+	recent_worklogs = sorted_worklogs[-10:]
+
 	# Reformat timestamps to be human readable
-	for worklog in sorted_worklogs:
+	for worklog in recent_worklogs:
 		updated = datetime.strptime(worklog["started"], "%Y-%m-%dT%H:%M:%S.%f%z")
 		worklog["started"] = updated.strftime("%a, %B %d")
 		worklog["comment"] = worklog["comment"].replace("\r\n", "")
 
-	for worklog in sorted_worklogs:
+	for worklog in recent_worklogs:
 		print("{}: \t{} logged {} to {} ({})".format(worklog["started"], worklog["author"], worklog["time_spent"], worklog["issue"], worklog["summary"]))
